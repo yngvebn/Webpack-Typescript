@@ -1,6 +1,6 @@
 ﻿import { IModule, extend } from 'angular';
 
-export function Component(module: angular.IModule, options: {
+export default function Component(module: angular.IModule, options: {
     controllerAs?: string,
     template?: string,
     templates?: {

@@ -1,5 +1,12 @@
 import { module, IModule  } from 'angular';
-import MainComponent from './MainComponent/MainComponent';
+import uirouter from 'angular-ui-router';
 
-let app:IModule = module('app', []);
+import { MainComponent } from './Components';
+import { ComponentModule } from './Components/module';
+
+let app:IModule = module('app', [
+    ComponentModule.name,
+    uirouter
+]);
+
 export { app };
