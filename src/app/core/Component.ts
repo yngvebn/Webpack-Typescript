@@ -1,6 +1,7 @@
 ﻿import { IModule, extend } from 'angular';
+import 'reflect-metadata';
 
-export default function Component(module: angular.IModule, options: {
+export function Component(options: {
     controllerAs?: string,
     template?: string,
     templates?: {
@@ -12,8 +13,9 @@ export default function Component(module: angular.IModule, options: {
     templateUrl?: string,
     bindings?: any,
 }) {
-    return (controller: any) => {
-
+    return (controller: any, key?) => {
+        Reflect.defineMetadata('custom:component', options, controller, key);
+        
         if (!controller.name) {
             controller.name = controller.toString().match(/^function\s*([^\s(]+)/)[1];
         }
@@ -24,7 +26,6 @@ export default function Component(module: angular.IModule, options: {
         }
         options.controllerAs = options.controllerAs || 'ctrl';
 
-        module.component(selector, extend(options, { controller: controller }));
+        //module.component(selector, extend(options, { controller: controller }));
     };
 }
-

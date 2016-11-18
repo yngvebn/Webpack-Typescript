@@ -1,12 +1,14 @@
-import { IModule, module } from 'angular';
-import Component from '../../core/Component';
-import { ComponentModule } from '../module';
+import { IComponentOptions, IController, IComponentController } from 'angular';
+import {Component} from  '../../core/Component'
 
-@Component(ComponentModule, {
-    template: '<h1>Hello Component</h1>'
+@Component({
+    template: "<h1>Hello component</h1>"
 })
-export default class MainComponent{
+class MainComponent {
     constructor() {
-        console.log('test');
+        console.log('Main Component!');
     }
 }
+console.log('loaded main component-file');
+
+export { MainComponent }

@@ -1,12 +1,10 @@
-import { module, IModule  } from 'angular';
-import uirouter from 'angular-ui-router';
+import { bootstrapModule  } from './core/NgModule';
+import { ComponentModule } from './Components/ComponentModule';
+import { NgModule } from './core/NgModule';
 
-import { MainComponent } from './Components';
-import { ComponentModule } from './Components/module';
+@NgModule({
+    imports: [ComponentModule]
+})
+class AppModule{}
 
-let app:IModule = module('app', [
-    ComponentModule.name,
-    uirouter
-]);
-
-export { app };
+bootstrapModule(AppModule);
