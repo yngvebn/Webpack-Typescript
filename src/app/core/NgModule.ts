@@ -1,4 +1,7 @@
 import { IModule, extend, module, bootstrap as ngBootstrap } from 'angular';
+import { ui } from 'angular';
+import uiRouter from 'angular-ui-router';
+
 import 'reflect-metadata';
 
 function NgModule(options: {
@@ -6,39 +9,64 @@ function NgModule(options: {
     imports?: any[]
 }) {
     return (controller: any) => {
-
         function createModuleName(ctrl: any) {
+            if (typeof ctrl === "string") return ctrl;
             if (!ctrl.name) {
                 ctrl.name = ctrl.toString().match(/^function\s*([^\s(]+)/)[1];
             }
-            return camelize(ctrl.name.replace('Component', ''));
-
-            function camelize(str: string): string {
-                return str.replace(/(?:^\w|[A-Z]|\b\w)/g, (letter: string, index: number) => { return (index === 0 ? letter.toLowerCase() : letter.toUpperCase()); }).replace(/\s+/g, '');
-            }
+            return ctrl.name;
         }
 
-        function createComponentSelector(ctrl: any): string{
+        function createComponentSelector(ctrl: any): string {
             if (!ctrl.name) {
                 ctrl.name = ctrl.toString().match(/^function\s*([^\s(]+)/)[1];
             }
             var selector = camelize(ctrl.name.replace('Component', ''));
 
-            function camelize(str: string): string {
-                return str.replace(/(?:^\w|[A-Z]|\b\w)/g, (letter: string, index: number) => { return (index === 0 ? letter.toLowerCase() : letter.toUpperCase()); }).replace(/\s+/g, '');
-            }
-
             return selector;
         }
+
+        function camelize(str: string): string {
+            return str.replace(/(?:^\w|[A-Z]|\b\w)/g, (letter: string, index: number) => { return (index === 0 ? letter.toLowerCase() : letter.toUpperCase()); }).replace(/\s+/g, '');
+        }
+
+        function registerRoute(ctrl, module: IModule, routeOptions) {
+            if (module.requires.indexOf(uiRouter) === -1) {
+                throw new Error(`Module '${module.name}' must import module 'uiRouter' in order to use @Route`)
+            }
+            if (!ctrl.name) {
+                ctrl.name = ctrl.toString().match(/^function\s*([^\s(]+)/)[1];
+            }
+            let state: ui.IState = {
+                url: routeOptions.url,
+                name: routeOptions.name || ctrl.name,
+                component: camelize(ctrl.name.replace('Component', ''))
+            }
+            module.config(['$urlRouterProvider', '$stateProvider', ($urlRouterProvider: ui.IUrlRouterProvider, $stateProvider: ui.IStateProvider) => {
+                $stateProvider.state(state);
+                if (routeOptions.isDefault) {
+                    $urlRouterProvider.otherwise(routeOptions.url);
+                }
+            }])
+            console.log('register state::', state);
+        }
+
+        try { module('___services') } catch (error) { module('___services', []); }
 
         let moduleNames = (options.imports || []).map(element => {
             return createModuleName(element);
         });
+        moduleNames.push('___services');
         let thisModule: IModule = module(createModuleName(controller), moduleNames);
         (options.declarations || []).forEach((declaration) => {
             let componentOptions = Reflect.getMetadata("custom:component", declaration);
             componentOptions.controller = declaration;
             thisModule.component(createComponentSelector(declaration), componentOptions);
+
+            let routeOptions = Reflect.getMetadata("custom:route", declaration);
+            if (routeOptions) {
+                registerRoute(declaration, thisModule, routeOptions);
+            }
         })
     };
 }
@@ -56,14 +84,11 @@ function bootstrapModule(modules: any, element?: string | Element | JQuery | Doc
     ngBootstrap(element, modules.map(m => createModuleName(m)));
 
     function createModuleName(ctrl: any) {
+        if (typeof ctrl === "string") return ctrl;
         if (!ctrl.name) {
             ctrl.name = ctrl.toString().match(/^function\s*([^\s(]+)/)[1];
         }
-        return camelize(ctrl.name.replace('Component', ''));
-
-        function camelize(str: string): string {
-            return str.replace(/(?:^\w|[A-Z]|\b\w)/g, (letter: string, index: number) => { return (index === 0 ? letter.toLowerCase() : letter.toUpperCase()); }).replace(/\s+/g, '');
-        }
+        return ctrl.name;
     }
 }
 export { NgModule, INgModule, bootstrapModule }

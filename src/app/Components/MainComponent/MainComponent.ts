@@ -1,14 +1,18 @@
-import { IComponentOptions, IController, IComponentController } from 'angular';
-import {Component} from  '../../core/Component'
+import { Route, Component} from  '../../core'
+import {MainService} from './MainService';
 
 @Component({
-    template: "<h1>Hello component</h1>"
+    templateUrl: require('./MainComponent.tpl.html')
 })
-class MainComponent {
-    constructor() {
+@Route({
+    url: '/',
+    isDefault: true
+})
+export class MainComponent {
+    constructor(mainService: MainService) {
         console.log('Main Component!');
+        this.greeting = mainService.getGreeting();
     }
-}
-console.log('loaded main component-file');
 
-export { MainComponent }
+    greeting: string;
+}

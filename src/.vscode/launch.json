@@ -1,0 +1,13 @@
+{
+    "version": "0.1.0",
+    "configurations": [
+        {
+            "name": "Attach with sourcemaps",
+            "type": "chrome",
+            "request": "launch",
+            "port": 9222,
+            "sourceMaps": true,
+            "url": "http://localhost:3333"
+        }
+    ]
+}

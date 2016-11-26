@@ -1,10 +1,13 @@
 var webpack = require('webpack');
+var path = require('path');
 module.exports = {
     entry: {
-        app: './app/app.ts'
+        app: './app/app.ts',
+        vendor: ['angular', 'angular-ui-router', 'reflect-metadata']
     },
     output: {
-        filename: './js/[name].js'
+        filename: 'bundle.js',
+        path: './js/'
     },
     // Turn on sourcemaps
     devtool: 'source-map',
@@ -12,11 +15,13 @@ module.exports = {
         extensions: ['', '.webpack.js', '.web.js', '.ts', '.js']
     }, // Add minification
     plugins: [
-        //new webpack.optimize.UglifyJsPlugin()
+        new webpack.optimize.CommonsChunkPlugin(/* chunkName= */"vendor", /* filename= */"vendor.bundle.js"),
+        new webpack.optimize.UglifyJsPlugin({ mangle: false })
     ],
     module: {
         loaders: [
-            { test: /\.ts$/, loader: 'ts-loader' }
+            { test: /\.ts$/, loader: 'ts-loader' },
+            { test: /\.html$/, loader: "ngTemplate?relativeTo=" + __dirname + "!html" }
         ]
     }
 }
