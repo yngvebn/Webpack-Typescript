@@ -1,4 +1,3 @@
-import {IModule, module} from 'angular'
 import { MainComponent } from './MainComponent/MainComponent';
 import {NgModule} from '../core';
 import uiRouter from 'angular-ui-router';
@@ -7,7 +6,6 @@ import uiRouter from 'angular-ui-router';
   imports: [uiRouter],
   declarations: [ MainComponent ]
 })
-class ComponentModule { 
-}
+class ComponentModule { }
 
 export {ComponentModule}
