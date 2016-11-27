@@ -10,7 +10,6 @@ import {MainComponent} from '../MainComponent'
 })
 export class ChildComponent {
     constructor() {
-        console.log('Child Component!');
     }
 
     greeting: string;

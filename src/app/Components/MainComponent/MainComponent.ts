@@ -11,7 +11,7 @@ import {TestService} from '../../Services'
 })
 export class MainComponent {
     constructor(mainService: MainService, testService: TestService) {
-        console.log('Main Component!');
+        console.log('Main Loaded!!');
         this.greeting = mainService.getGreeting();
     }
 

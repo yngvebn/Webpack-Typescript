@@ -7,7 +7,7 @@ module.exports = {
     },
     output: {
         filename: 'bundle.js',
-        path: './js/'
+        path: require('path').resolve('./js/')
     },
     // Turn on sourcemaps
     devtool: 'source-map',
@@ -15,9 +15,9 @@ module.exports = {
         extensions: ['', '.webpack.js', '.web.js', '.ts', '.js']
     }, // Add minification
     plugins: [
-        new webpack.optimize.CommonsChunkPlugin(/* chunkName= */"vendor", /* filename= */"vendor.bundle.js"),
-        new webpack.optimize.UglifyJsPlugin({ mangle: false })
+        new webpack.optimize.CommonsChunkPlugin(/* chunkName= */"vendor", /* filename= */"vendor.bundle.js")
     ],
+    devServer: { inline: true },
     module: {
         loaders: [
             { test: /\.ts$/, loader: 'ts-loader' },
