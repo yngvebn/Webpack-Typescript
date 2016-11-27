@@ -6,6 +6,7 @@ import 'reflect-metadata';
 
 function NgModule(options: {
     declarations?: any[],
+    providers?: any[],
     imports?: any[]
 }) {
     return (controller: any) => {
@@ -39,8 +40,17 @@ function NgModule(options: {
             }
             let state: ui.IState = {
                 url: routeOptions.url,
-                name: routeOptions.name || ctrl.name,
+                name: (routeOptions.name || ctrl.name.replace('Component', '')),
                 component: camelize(ctrl.name.replace('Component', ''))
+            }
+            if (routeOptions.parent) {
+                let parentRouteOptions = Reflect.getMetadata("custom:route", routeOptions.parent);
+                if (parentRouteOptions) {
+                    if (!routeOptions.parent.name) {
+                        routeOptions.parent.name = routeOptions.parent.toString().match(/^function\s*([^\s(]+)/)[1];
+                    }
+                    state.parent = (parentRouteOptions.name || routeOptions.parent.name.replace('Component', '')); 
+                }
             }
             module.config(['$urlRouterProvider', '$stateProvider', ($urlRouterProvider: ui.IUrlRouterProvider, $stateProvider: ui.IStateProvider) => {
                 $stateProvider.state(state);
@@ -51,13 +61,24 @@ function NgModule(options: {
             console.log('register state::', state);
         }
 
-        try { module('___services') } catch (error) { module('___services', []); }
-
         let moduleNames = (options.imports || []).map(element => {
             return createModuleName(element);
         });
-        moduleNames.push('___services');
+
         let thisModule: IModule = module(createModuleName(controller), moduleNames);
+        console.log(`${thisModule.name}.config`, controller);
+        thisModule.config(controller);
+        console.log(thisModule.name, options.providers);
+        (options.providers || []).forEach((service) => {
+            if (service) {
+                let name = service.toString().match(/^function\s*([^\s(]+)/)[1];
+                var serviceName: string = camelize(name);
+                console.log(`${thisModule.name}.service(${serviceName})`);
+                thisModule.service(serviceName, service);
+            }
+        });
+
+
         (options.declarations || []).forEach((declaration) => {
             let componentOptions = Reflect.getMetadata("custom:component", declaration);
             componentOptions.controller = declaration;

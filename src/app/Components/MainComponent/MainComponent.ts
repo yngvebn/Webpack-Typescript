@@ -1,5 +1,6 @@
 import { Route, Component} from  '../../core'
 import {MainService} from './MainService';
+import {TestService} from '../../Services'
 
 @Component({
     templateUrl: require('./MainComponent.tpl.html')
@@ -9,7 +10,7 @@ import {MainService} from './MainService';
     isDefault: true
 })
 export class MainComponent {
-    constructor(mainService: MainService) {
+    constructor(mainService: MainService, testService: TestService) {
         console.log('Main Component!');
         this.greeting = mainService.getGreeting();
     }

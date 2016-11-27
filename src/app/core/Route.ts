@@ -3,7 +3,8 @@ import 'reflect-metadata';
 
 export function Route(options: {
     url: string,
-    isDefault?: boolean
+    isDefault?: boolean,
+    parent?: any
 }) {
     return (controller: any, key?) => {
         Reflect.defineMetadata('custom:route', options, controller, key);
